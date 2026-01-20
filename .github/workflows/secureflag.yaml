@@ -1,0 +1,41 @@
+# Required secrets (set as repository secrets):
+# - SECUREFLAG_API_KEY: SecureFlag API authentication
+# - ANTHROPIC_API_KEY: Anthropic API for AI features
+#
+# Optional variables:
+# - SECUREFLAG_REPO_PATH: Absolute path to restrict analysis to a directory (prepend with ${{ github.workspace }})
+# - SECUREFLAG_COMPONENT_LIMIT: (for 'model-repo') Hinted number of nodes in TC diagrams
+
+name: SecureFlag CI
+
+on:
+  push:
+    tags:
+      - '*'
+    branches: "*"  
+  # Run on schedule (configure as needed)
+  # schedule:
+  #   - cron: '0 0 * * 0'
+
+jobs:
+  secureflag_ci:
+    name: SecureFlag CI
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/secureflag-community/sf-runner:latest
+
+    env:
+      SECUREFLAG_API_KEY: ${{ secrets.SECUREFLAG_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SECUREFLAG_COMMANDS: model-repo
+      SECUREFLAG_MODEL_UUID: ${{ secrets.SECUREFLAG_MODEL_UUID }}
+      SECUREFLAG_COMPONENT_LIMIT: 25
+
+    continue-on-error: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run SecureFlag CI Runner
+        run: /app/entrypoint.sh
