@@ -10,12 +10,7 @@ name: SecureFlag CI
 
 on:
   push:
-    tags:
-      - '*'
     branches: "*"  
-  # Run on schedule (configure as needed)
-  # schedule:
-  #   - cron: '0 0 * * 0'
 
 jobs:
   secureflag_ci:
